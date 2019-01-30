@@ -25,13 +25,11 @@ base_maze.forEach(level => {
 
 function render(maze, items, level){
 	full_maze = maze.render();
-	console.log(full_maze);
 	items.forEach(item => {
-		full_maze[item.l][item.y][item.z] = item.c;
-		console.log(full_maze[item.l][item.y])
+		full_maze[item.l][item.y][item.x] = item.c;
 	})
 	full_maze[level].forEach(x => {
-		console.log(x)
+		console.log(x.join(''))
 	})
 }
 
@@ -48,7 +46,6 @@ class Item{
 class Maze {
 	constructor(maze){
 		console.log('Maze Start');
-		console.log(maze);
 		this.maze = maze;
 	}
 	
