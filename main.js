@@ -1,3 +1,6 @@
+const readline = require('readline');
+readline.emitKeypressEvents(process.stdin);
+process.stdin.setRawMode(true);
 
 console.log('Starting');
 // maze
@@ -35,11 +38,22 @@ function render(maze, items, level){
 
 
 class Item{
-	constructor(l,x,y,c) {
+	constructor(maze, l,x,y,c) {
+		this.maze = maze;
 		this.l = l;
 		this.x = x;
 		this.y = y;
 		this.c = c;
+	}
+	move(l, x, y){
+		let newL = this.l + l
+		let newX = this.x + x
+		let newY = this.y + y
+		if(this.maze.check(newL,newX,newY)){
+			this.l = newL;
+			this.x = newX;
+			this.y = newY;
+		}
 	}
 }
 
@@ -48,27 +62,38 @@ class Maze {
 		console.log('Maze Start');
 		this.maze = maze;
 	}
-	
+	check(l,x,y){
+		try {
+			return this.maze[l][y][x] == ' ';
+		} catch(err){}
+		
+		return false;
+	}
 	render(){
-		return this.maze;
+		return JSON.parse(JSON.stringify(this.maze));
 	}
 }
 
-items = [
-	new Item(0,1,1,'P'),
-]
+
 
 maze = new Maze(base_maze);
+player = new Item(maze, 0,1,1,'P'),
+items = [player]
 
 render(maze, items, 0)
 
 
-
-
-
-
-
-
-
-
+process.stdin.on('keypress', (str, key) => {
+	if (key.name == 'escape') {
+		console.log("Quiting...");
+		process.exit();
+	}
+	else if (str == 'w') player.move(0,0,-1);
+	else if (str == 's') player.move(0,0,1);
+	else if (str == 'a') player.move(0,-1,0);
+	else if (str == 'd') player.move(0,1,0);
+	render(maze, items, player.l)
+})
+console.log("Game started!");
+console.log("Please use wasd to navigate and esc to exit.");
 
