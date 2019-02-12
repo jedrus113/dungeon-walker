@@ -2,18 +2,9 @@ const readline = require('readline');
 readline.emitKeypressEvents(process.stdin);
 process.stdin.setRawMode(true);
 
-console.log('Starting');
-// maze
-base_maze = [
-	[
-		"###############",
-		"#             #",
-		"#             #",
-		"#             #",
-		"########## ####",
-	],
-]
+var maps = require('./maps');
 
+base_maze = maps.map1
 base_maze.forEach(level => {
 	for (let i2=0; i2 < level.length; i2++){
 		let row = level[i2];
@@ -27,6 +18,7 @@ base_maze.forEach(level => {
 
 
 function render(maze, items, level){
+	process.stdout.write('\033c');
 	full_maze = maze.render();
 	items.forEach(item => {
 		full_maze[item.l][item.y][item.x] = item.c;
@@ -46,14 +38,21 @@ class Item{
 		this.c = c;
 	}
 	move(l, x, y){
-		let newL = this.l + l
-		let newX = this.x + x
-		let newY = this.y + y
-		if(this.maze.check(newL,newX,newY)){
+		let newL = this.l + l;
+		let newX = this.x + x;
+		let newY = this.y + y;
+		if( this.maze.check(newL,newX,newY) ) {
 			this.l = newL;
 			this.x = newX;
 			this.y = newY;
 		}
+	}
+	useStairs(){
+		let block = this.maze.maze[this.l][this.y][this.x];
+		console.log('Use');
+		console.log(block);
+		if (block == 'v') this.move(1, 0,0);
+		else if (block == '^') this.move(-1,0,0);
 	}
 }
 
@@ -64,7 +63,12 @@ class Maze {
 	}
 	check(l,x,y){
 		try {
-			return this.maze[l][y][x] == ' ';
+			let block = this.maze[l][y][x];
+			if (block === 'S'){
+				console.log("\nCongratulations!\nYou Won!");
+				process.exit();
+			}
+			return block == ' ' || block == 'v' || block == '^';
 		} catch(err){}
 		
 		return false;
@@ -92,6 +96,7 @@ process.stdin.on('keypress', (str, key) => {
 	else if (str == 's') player.move(0,0,1);
 	else if (str == 'a') player.move(0,-1,0);
 	else if (str == 'd') player.move(0,1,0);
+	else if (str == ' ') player.useStairs(0,0,0);
 	render(maze, items, player.l)
 })
 console.log("Game started!");
