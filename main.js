@@ -61,7 +61,7 @@ class Item{
 		this.seeReq(this.l,this.x,this.y,seePower,-1,1);
 		this.seeReq(this.l,this.x,this.y,seePower,-1,-1);
 	}
-	seeReq(l,x,y,p,px,py){
+	seeReq(l,x,y,p,px,py,u=false){
 		while (this.known.length <= l) this.known.push([]);
 		let knownL = this.known[l];
 		while (knownL.length <= y) knownL.push([]);
@@ -70,16 +70,17 @@ class Item{
 		this.known[l][y][x] = this.maze.getBlock(l,x,y);
 		if (p>0 && this.maze.check(l,x,y)){
 			let p2 = p-1;
-			this.seeReq(l,x+px, y+py, p2, px,py);
+			this.seeReq(l,x+px, y+py, p2, px,py,u);
+			if (u) return;
 			if(px!=0 && py!=0){
-				this.seeReq(l,x,y,p2,px,0);
-				this.seeReq(l,x,y,p2,0,py);
+				this.seeReq(l,x,y,p2,px,0,true);
+				this.seeReq(l,x,y,p2,0,py,true);
 			} else if(px != 0){
-				this.seeReq(l,x,y,p2,px,1);
-				this.seeReq(l,x,y,p2,px,-1);
+				this.seeReq(l,x,y,p2,px,1,true);
+				this.seeReq(l,x,y,p2,px,-1,true);
 			} else {
-				this.seeReq(l,x,y,p2,1,py);
-				this.seeReq(l,x,y,p2,-1,px);
+				this.seeReq(l,x,y,p2,1,py,true);
+				this.seeReq(l,x,y,p2,-1,py,true);
 			}
 		}
 	}
@@ -120,7 +121,7 @@ class Maze {
 				console.log("\nCongratulations!\nYou Won!");
 				process.exit();
 			}
-			return block == ' ' || block == 'v' || block == '^';
+			return block == '.' || block == 'v' || block == '^';
 		} catch(err){}
 		
 		return false;
