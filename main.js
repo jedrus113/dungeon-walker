@@ -33,7 +33,7 @@ function renderLevel(maze, items, level){
 		} catch (err) {}
 	})
 	maze[level].forEach(x => {
-		console.log(x.join(''))
+		console.log(x.join(' '))
 	})
 }
 
