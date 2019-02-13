@@ -2,6 +2,15 @@ const readline = require('readline');
 readline.emitKeypressEvents(process.stdin);
 process.stdin.setRawMode(true);
 
+function clear(){
+	process.stdout.write('\033c');
+}
+
+function copy(o){
+	return JSON.parse(JSON.stringify(o));
+
+}
+
 var maps = require('./maps');
 
 base_maze = maps.map1
@@ -17,13 +26,13 @@ base_maze.forEach(level => {
 })
 
 
-function render(maze, items, level){
-	process.stdout.write('\033c');
-	full_maze = maze.render();
+function renderLevel(maze, items, level){
 	items.forEach(item => {
-		full_maze[item.l][item.y][item.x] = item.c;
+		try{
+			maze[item.l][item.y][item.x] = item.c;
+		} catch (err) {}
 	})
-	full_maze[level].forEach(x => {
+	maze[level].forEach(x => {
 		console.log(x.join(''))
 	})
 }
@@ -32,10 +41,34 @@ function render(maze, items, level){
 class Item{
 	constructor(maze, l,x,y,c) {
 		this.maze = maze;
+		this.known = [];
 		this.l = l;
 		this.x = x;
 		this.y = y;
 		this.c = c;
+		this.see();
+	}
+	see(){
+		let seePower = 3;
+		this.seeReq(this.l,this.x,this.y,seePower,0,1);
+		this.seeReq(this.l,this.x,this.y,seePower,0,-1);
+		this.seeReq(this.l,this.x,this.y,seePower,1,0);
+		this.seeReq(this.l,this.x,this.y,seePower,-1,0);
+		
+		this.seeReq(this.l,this.x,this.y,seePower,1,1);
+		this.seeReq(this.l,this.x,this.y,seePower,1,-1);
+		this.seeReq(this.l,this.x,this.y,seePower,-1,1);
+		this.seeReq(this.l,this.x,this.y,seePower,-1,-1);
+	}
+	seeReq(l,x,y,p,px,py){
+		while (this.known.length <= l) this.known.push([]);
+		let knownL = this.known[l];
+		while (knownL.length <= y) knownL.push([]);
+		let knownY = knownL[y];
+		while (knownY.length <= x) knownY.push(' ');
+		this.known[l][y][x] = this.maze.getBlock(l,x,y);
+		if (p>0 && this.maze.check(l,x,y))
+			this.seeReq(l,x+px, y+py, p-1, px,py)
 	}
 	move(l, x, y){
 		let newL = this.l + l;
@@ -46,6 +79,7 @@ class Item{
 			this.x = newX;
 			this.y = newY;
 		}
+		this.see();
 	}
 	useStairs(){
 		let block = this.maze.maze[this.l][this.y][this.x];
@@ -53,6 +87,10 @@ class Item{
 		console.log(block);
 		if (block == 'v') this.move(1, 0,0);
 		else if (block == '^') this.move(-1,0,0);
+	}
+	render(items){
+		clear();
+		renderLevel(copy(this.known), items, this.l);
 	}
 }
 
@@ -76,6 +114,9 @@ class Maze {
 	render(){
 		return JSON.parse(JSON.stringify(this.maze));
 	}
+	getBlock(l,x,y){
+		return this.maze[l][y][x];
+	}
 }
 
 
@@ -84,7 +125,7 @@ maze = new Maze(base_maze);
 player = new Item(maze, 0,1,1,'P'),
 items = [player]
 
-render(maze, items, 0)
+player.render(items);
 
 
 process.stdin.on('keypress', (str, key) => {
@@ -97,7 +138,7 @@ process.stdin.on('keypress', (str, key) => {
 	else if (str == 'a') player.move(0,-1,0);
 	else if (str == 'd') player.move(0,1,0);
 	else if (str == ' ') player.useStairs(0,0,0);
-	render(maze, items, player.l)
+	player.render(items)
 })
 console.log("Game started!");
 console.log("Please use wasd to navigate and esc to exit.");
