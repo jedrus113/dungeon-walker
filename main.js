@@ -144,14 +144,18 @@ player.render(items);
 
 
 process.stdin.on('keypress', (str, key) => {
-	if (key.name == 'escape') {
+	if (str == 'q' || key.name == 'escape') {
 		console.log("Quiting...");
 		process.exit();
 	}
-	else if (str == 'w') player.move(0,0,-1);
-	else if (str == 's') player.move(0,0,1);
-	else if (str == 'a') player.move(0,-1,0);
-	else if (str == 'd') player.move(0,1,0);
+	else if (str == 'w' || key.name == 'up')
+		player.move(0,0,-1);
+	else if (str == 's' || key.name == 'down')
+		player.move(0,0,1);
+	else if (str == 'a' || key.name == 'left')
+		player.move(0,-1,0);
+	else if (str == 'd' || key.name == 'right')
+		player.move(0,1,0);
 	else if (str == ' ') player.useStairs(0,0,0);
 	player.render(items)
 })
