@@ -49,7 +49,8 @@ class Item{
 		this.see();
 	}
 	see(){
-		let seePower = 3;
+		let seePower = 5;
+		this.known = []
 		this.seeReq(this.l,this.x,this.y,seePower,0,1);
 		this.seeReq(this.l,this.x,this.y,seePower,0,-1);
 		this.seeReq(this.l,this.x,this.y,seePower,1,0);
@@ -67,9 +68,22 @@ class Item{
 		let knownY = knownL[y];
 		while (knownY.length <= x) knownY.push(' ');
 		this.known[l][y][x] = this.maze.getBlock(l,x,y);
-		if (p>0 && this.maze.check(l,x,y))
-			this.seeReq(l,x+px, y+py, p-1, px,py)
+		if (p>0 && this.maze.check(l,x,y)){
+			let p2 = p-1;
+			this.seeReq(l,x+px, y+py, p2, px,py);
+			if(px!=0 && py!=0){
+				this.seeReq(l,x,y,p2,px,0);
+				this.seeReq(l,x,y,p2,0,py);
+			} else if(px != 0){
+				this.seeReq(l,x,y,p2,px,1);
+				this.seeReq(l,x,y,p2,px,-1);
+			} else {
+				this.seeReq(l,x,y,p2,1,py);
+				this.seeReq(l,x,y,p2,-1,px);
+			}
+		}
 	}
+
 	move(l, x, y){
 		let newL = this.l + l;
 		let newX = this.x + x;
