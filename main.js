@@ -49,16 +49,42 @@ function renderLevel(maze, items, cl, cx, cy){
 
 
 class Item{
-	constructor(maze, l,x,y,c) {
+	constructor(maze, l,x,y,c){
 		this.maze = maze;
-		this.known = [];
 		this.l = l;
 		this.x = x;
 		this.y = y;
 		this.c = c;
-		this.see();
 	}
-	see(){
+	move(l, x, y){
+		let newL = this.l + l;
+		let newX = this.x + x;
+		let newY = this.y + y;
+		if( this.maze.check(newL,newX,newY) ) {
+			this.l = newL;
+			this.x = newX;
+			this.y = newY;
+		}
+	}
+	useStairs(){
+		let block = this.maze.maze[this.l][this.y][this.x];
+		if (block == 'v') this.move(1, 0,0);
+		else if (block == '^') this.move(-1,0,0);
+	}
+
+}
+
+class Player extends Item {	
+	constructor(maze, l,x,y,c){
+		super(maze, l,x,y,c);
+		this.known = [];
+	}
+	render(items){
+		this.see();
+		clear();
+		renderLevel(copy(this.known), items, this.l, this.x, this.y);
+	}
+	see() {
 		let seePower = cons.seePower;
 		this.known = []
 		this.seeReq(this.l,this.x,this.y,seePower,0,1);
@@ -71,7 +97,7 @@ class Item{
 		this.seeReq(this.l,this.x,this.y,seePower,-1,1);
 		this.seeReq(this.l,this.x,this.y,seePower,-1,-1);
 	}
-	seeReq(l,x,y,p,px,py,u=false){
+	seeReq(l,x,y,p,px,py,u=false) {
 		while (this.known.length <= l) this.known.push([]);
 		let knownL = this.known[l];
 		while (knownL.length <= y) knownL.push([]);
@@ -93,29 +119,6 @@ class Item{
 				this.seeReq(l,x,y,p2,-1,py,true);
 			}
 		}
-	}
-
-	move(l, x, y){
-		let newL = this.l + l;
-		let newX = this.x + x;
-		let newY = this.y + y;
-		if( this.maze.check(newL,newX,newY) ) {
-			this.l = newL;
-			this.x = newX;
-			this.y = newY;
-		}
-		this.see();
-	}
-	useStairs(){
-		let block = this.maze.maze[this.l][this.y][this.x];
-		console.log('Use');
-		console.log(block);
-		if (block == 'v') this.move(1, 0,0);
-		else if (block == '^') this.move(-1,0,0);
-	}
-	render(items){
-		clear();
-		renderLevel(copy(this.known), items, this.l, this.x, this.y);
 	}
 }
 
@@ -147,7 +150,7 @@ class Maze {
 
 
 maze = new Maze(base_maze);
-player = new Item(maze, 0,1,1,'P'),
+player = new Player(maze, 0,1,1,'P'),
 items = [player]
 
 player.render(items);
