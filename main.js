@@ -12,6 +12,7 @@ function copy(o){
 }
 
 var maps = require('./maps');
+var cons = require('./constants');
 
 base_maze = maps.map1
 base_maze.forEach(level => {
@@ -26,14 +27,23 @@ base_maze.forEach(level => {
 })
 
 
-function renderLevel(maze, items, level){
+function renderLevel(maze, items, cl, cx, cy){
+
 	items.forEach(item => {
 		try{
 			maze[item.l][item.y][item.x] = item.c;
 		} catch (err) {}
 	})
-	maze[level].forEach(x => {
-		console.log(x.join(' '))
+	let start_cx = cx - cons.seePower;
+	let start_cy = cy - cons.seePower;
+	let seeElems = (cons.seePower * 2) + 1
+	if (start_cx < 0) start_cx = 0;
+	if (start_cy < 0) start_cy = 0;
+	maze[cl].forEach(x => {
+		if(--start_cy < 0){
+			let new_x = x.splice(start_cx, 11);
+			console.log(new_x.join(' '))
+		}
 	})
 }
 
@@ -49,7 +59,7 @@ class Item{
 		this.see();
 	}
 	see(){
-		let seePower = 5;
+		let seePower = cons.seePower;
 		this.known = []
 		this.seeReq(this.l,this.x,this.y,seePower,0,1);
 		this.seeReq(this.l,this.x,this.y,seePower,0,-1);
@@ -105,7 +115,7 @@ class Item{
 	}
 	render(items){
 		clear();
-		renderLevel(copy(this.known), items, this.l);
+		renderLevel(copy(this.known), items, this.l, this.x, this.y);
 	}
 }
 
