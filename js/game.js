@@ -19,12 +19,13 @@ function preload ()
   this.load.spritesheet('wall', 'assets/map/map.png', { frameWidth: 16, frameHeight: 16 });
 }
 
-function create ()
-{
-  var wall = this.add.sprite(100, 100, 'wall');
-  wall.setFrame(0);
+function create () {
+  for (let i=0; i<100; i++)
+    this.add.sprite(20*i, 100, 'wall').setFrame(i+300);
 
-  var logo = this.add.sprite(400, 100, 'human');
+  this.add.sprite(100, 200, 'wall').setFrame(300);
+
+  var logo = this.add.sprite(400, 200, 'human');
   logo.setFrame(0);
 
 }
