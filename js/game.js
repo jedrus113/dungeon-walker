@@ -15,14 +15,16 @@ var game = new Phaser.Game(config);
 
 function preload ()
 {
-  this.load.image('human', 'assets/characters/human.png');
-  this.load.image('wall', 'assets/map/map.png');
+  this.load.spritesheet('human', 'assets/characters/human.png', { frameWidth: 16, frameHeight: 16 });
+  this.load.spritesheet('wall', 'assets/map/map.png', { frameWidth: 16, frameHeight: 16 });
 }
 
 function create ()
 {
-  this.add.image(100, 100, 'wall');
+  var wall = this.add.sprite(100, 100, 'wall');
+  wall.setFrame(0);
 
-  var logo = this.physics.add.image(400, 100, 'human');
+  var logo = this.add.sprite(400, 100, 'human');
+  logo.setFrame(0);
 
 }
