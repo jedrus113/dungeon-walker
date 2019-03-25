@@ -30,18 +30,17 @@ function preload ()
 }
 
 function create () {
-    map1.forEach(level => {
-        for (let i2=0; i2 < level.length; i2++){
-            let row = level[i2];
-            for (let i=0; i<row.length; i++){
-                let el = 3;
-                if (row[i] == '#') el = 0;
-                else if (row[i] == '.') el = 35;
-                this.add.sprite(12 + 24*i, 12 + 24*i2, 'map').setFrame(el);
-            }
-        }
-    });
-
-  const logo = this.add.sprite(400, 200, 'human').setScale(1.5);
+  let player;
+  let level = map1[0];
+  for (let i2=0; i2 < level.length; i2++){
+      let row = level[i2];
+      for (let i=0; i<row.length; i++){
+        let el = 3;
+        if (row[i] == '#') el = 0;
+        else if (row[i] == '.') el = 16;
+        this.add.sprite(12 + 24*i, 12 + 24*i2, 'map').setFrame(el);
+          if (row[i] == 'S') player = this.add.sprite(12 + 24*i, 12 + 24*i2, 'human').setScale(1.5);
+      }
+  }
 
 }
