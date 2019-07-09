@@ -1,14 +1,11 @@
+/**
+
 const readline = require('readline');
 readline.emitKeypressEvents(process.stdin);
 process.stdin.setRawMode(true);
 
 function clear(){
 	process.stdout.write('\033c');
-}
-
-function copy(o){
-	return JSON.parse(JSON.stringify(o));
-
 }
 
 var maps = require('./maps');
@@ -25,26 +22,39 @@ base_maze.forEach(level => {
 		level[i2] = new_row;
 	}
 })
+**/
+import {settings} from "./settings.js";
 
+
+
+function copy(o){
+	return JSON.parse(JSON.stringify(o));
+
+}
 
 function renderLevel(maze, items, cl, cx, cy){
-
-	items.forEach(item => {
-		try{
-			maze[item.l][item.y][item.x] = item.c;
-		} catch (err) {}
-	})
-	let start_cx = cx - cons.seePower;
-	let start_cy = cy - cons.seePower;
-	let seeElems = (cons.seePower * 2) + 1
+	if (items){
+		items.forEach(item => {
+			try{
+				maze[item.l][item.y][item.x] = item.c;
+			} catch (err) {}
+		})
+	}
+	let start_cx = cx - settings.seePower;
+	let start_cy = cy - settings.seePower;
+	let seeElems = (settings.seePower * 2) + 1
 	if (start_cx < 0) start_cx = 0;
 	if (start_cy < 0) start_cy = 0;
+
+	let visible_level = [];
 	maze[cl].forEach(x => {
 		if(--start_cy < 0){
 			let new_x = x.splice(start_cx, 11);
-			console.log(new_x.join(' '))
+			console.log(new_x.join(' '));
+			visible_level.push(new_x)
 		}
-	})
+	});
+	return visible_level
 }
 
 
@@ -78,15 +88,22 @@ class Player extends Item {
 	constructor(maze, l,x,y,c){
 		super(maze, l,x,y,c);
 		this.known = [];
+		this.saw = [];
+		this.render()
+	}
+	move(l, x, y){
+		super.move(l, x, y);
+		this.render();
 	}
 	render(items){
+		if (!items) items = [];
+		items.push(this);
 		this.see();
-		clear();
-		renderLevel(copy(this.known), items, this.l, this.x, this.y);
+		this.saw = renderLevel(copy(this.known), items, this.l, this.x, this.y);
 	}
 	see() {
-		let seePower = cons.seePower;
-		this.known = []
+		let seePower = settings.seePower;
+		this.known = [];
 		this.seeReq(this.l,this.x,this.y,seePower,0,1);
 		this.seeReq(this.l,this.x,this.y,seePower,0,-1);
 		this.seeReq(this.l,this.x,this.y,seePower,1,0);
@@ -148,30 +165,27 @@ class Maze {
 }
 
 
-
-maze = new Maze(base_maze);
-player = new Player(maze, 0,1,1,'P'),
-items = [player]
-
-player.render(items);
-
-
-process.stdin.on('keypress', (str, key) => {
-	if (str == 'q' || key.name == 'escape') {
-		console.log("Quiting...");
-		process.exit();
+function move(direction){
+	switch(direction){
+		case 'up':
+			player.move(0,0,-1);
+			break;
+		case 'down':
+			player.move(0,0,1);
+			break;
+		case 'left':
+			player.move(0,-1,0);
+			break;
+		case 'right':
+			player.move(0,1,0);
+			break;
+		case 'use':
+			player.useStairs(0,0,0);
+			break;
 	}
-	else if (str == 'w' || key.name == 'up')
-		player.move(0,0,-1);
-	else if (str == 's' || key.name == 'down')
-		player.move(0,0,1);
-	else if (str == 'a' || key.name == 'left')
-		player.move(0,-1,0);
-	else if (str == 'd' || key.name == 'right')
-		player.move(0,1,0);
-	else if (str == ' ') player.useStairs(0,0,0);
 	player.render(items)
-})
+}
 console.log("Game started!");
 console.log("Please use wasd to navigate and esc to exit.");
 
+export {Player, Maze}
