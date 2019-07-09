@@ -32,7 +32,7 @@ function preload ()
 }
 
 function create () {
-    this.last_time = 0;
+    this.sleep_input_till = 0;
     this.maze = new Maze(map1);
     this.custom_player = new Player(this.maze, 0,1,1,'P');
     this.map_render = map_render;
@@ -44,25 +44,31 @@ function create () {
 }
 
 function update(time, delta) {
+    let sleep_input = 250;
+    if (time > this.sleep_input_till){
+        if (this.key_up.isDown) {
+            this.custom_player.move(0,0,-1);
+            this.sleep_input_till = time + sleep_input;
+        }
+        else if (this.key_down.isDown) {
+            this.custom_player.move(0,0,1);
+            this.sleep_input_till = time + sleep_input;
+        }
+        else if (this.key_left.isDown) {
+            this.custom_player.move(0,-1,0);
+            this.sleep_input_till = time + sleep_input;
+        }
+        else if (this.key_right.isDown) {
+            this.custom_player.move(0,1,0);
+            this.sleep_input_till = time + sleep_input;
+        }
+        else if (this.key_use.isDown) {
+            this.custom_player.useStairs(0,0,0);
+            this.sleep_input_till = time + sleep_input;
+        }
+    }
+    this.custom_player.render();
     this.map_render();
-    // logic waits for
-    if (time - this.last_time < 100) return;
-    this.last_time = time;
-    if (this.key_up.isDown) {
-        this.custom_player.move(0,0,-1);
-    }
-    else if (this.key_down.isDown) {
-        this.custom_player.move(0,0,1);
-    }
-    else if (this.key_left.isDown) {
-        this.custom_player.move(0,-1,0);
-    }
-    else if (this.key_right.isDown) {
-        this.custom_player.move(0,1,0);
-    }
-    else if (this.key_use.isDown) {
-        this.custom_player.useStairs(0,0,0);
-    }
 }
 
 function map_render() {
@@ -74,7 +80,7 @@ function map_render() {
             if (row[i] == '#') el = 0;
             else if (row[i] == '.') el = 16;
             this.add.sprite(12 + 24*i, 12 + 24*i2, 'map').setFrame(el);
-            if (row[i] == 'S') this.player = this.add.sprite(12 + 24*i, 12 + 24*i2, 'human').setScale(1.5);
+            if (row[i] == 'P') this.player = this.add.sprite(12 + 24*i, 12 + 24*i2, 'human').setScale(1.5);
         }
     }
 }

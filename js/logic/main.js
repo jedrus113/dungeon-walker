@@ -42,7 +42,7 @@ function renderLevel(maze, items, cl, cx, cy){
 	}
 	let start_cx = cx - settings.seePower;
 	let start_cy = cy - settings.seePower;
-	let seeElems = (settings.seePower * 2) + 1
+	let seeElems = (settings.seePower * 2) + 1;
 	if (start_cx < 0) start_cx = 0;
 	if (start_cy < 0) start_cy = 0;
 
@@ -50,7 +50,7 @@ function renderLevel(maze, items, cl, cx, cy){
 	maze[cl].forEach(x => {
 		if(--start_cy < 0){
 			let new_x = x.splice(start_cx, 11);
-			console.log(new_x.join(' '));
+			//console.log(new_x.join(' '));
 			visible_level.push(new_x)
 		}
 	});
@@ -90,10 +90,6 @@ class Player extends Item {
 		this.known = [];
 		this.saw = [];
 		this.render()
-	}
-	move(l, x, y){
-		super.move(l, x, y);
-		this.render();
 	}
 	render(items){
 		if (!items) items = [];
