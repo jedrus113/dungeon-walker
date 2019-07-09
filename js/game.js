@@ -35,7 +35,7 @@ function create () {
     this.level_sprites = [];
     this.sleep_input_till = 0;
     this.maze = new Maze(map1);
-    this.custom_player = new Player(this.maze, 0,1,1,'P');
+    this.custom_player = new Player(this.maze, 0,23,1,'P');
     this.map_render = map_render;
     this.key_up = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.W);
     this.key_down = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.S);
@@ -85,6 +85,7 @@ function map_render() {
             else if (ch_1 === '.') el = 16;
             else if (ch_1 === 'v') el = 37;
             else if (ch_1 === '^') el = 10;
+            else if (ch_1 === 'S') el = 11;
 
             if (el !== -1){
                 let sprite = this.add.sprite(12 + 24*i, 12 + 24*i2, 'map');
