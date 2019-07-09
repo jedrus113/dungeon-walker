@@ -32,6 +32,7 @@ function preload ()
 }
 
 function create () {
+    this.level_sprites = [];
     this.sleep_input_till = 0;
     this.maze = new Maze(map1);
     this.custom_player = new Player(this.maze, 0,1,1,'P');
@@ -72,15 +73,28 @@ function update(time, delta) {
 }
 
 function map_render() {
+    this.level_sprites.forEach(item => item.destroy());
+    this.level_sprites = [];
     let level = this.custom_player.saw;
     for (let i2=0; i2 < level.length; i2++){
         let row = level[i2];
         for (let i=0; i<row.length; i++){
-            let el = 3;
-            if (row[i] == '#') el = 0;
-            else if (row[i] == '.') el = 16;
-            this.add.sprite(12 + 24*i, 12 + 24*i2, 'map').setFrame(el);
-            if (row[i] == 'P') this.player = this.add.sprite(12 + 24*i, 12 + 24*i2, 'human').setScale(1.5);
+            let el = -1;
+            let ch_1 = row[i][0];
+            if (ch_1 === '#') el = 0;
+            else if (ch_1 === '.') el = 16;
+            else if (ch_1 === 'v') el = 37;
+            else if (ch_1 === '^') el = 10;
+
+            if (el !== -1){
+                let sprite = this.add.sprite(12 + 24*i, 12 + 24*i2, 'map');
+                sprite.setFrame(el);
+                this.level_sprites.push(sprite);
+            }
+            if (row[i][1] === 'P'){
+                this.player = this.add.sprite(12 + 24*i, 12 + 24*i2, 'human').setScale(1.5);
+                this.level_sprites.push(this.player);
+            }
         }
     }
 }

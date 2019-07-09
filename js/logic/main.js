@@ -36,7 +36,7 @@ function renderLevel(maze, items, cl, cx, cy){
 	if (items){
 		items.forEach(item => {
 			try{
-				maze[item.l][item.y][item.x] = item.c;
+				maze[item.l][item.y][item.x] += item.c;
 			} catch (err) {}
 		})
 	}
@@ -50,7 +50,7 @@ function renderLevel(maze, items, cl, cx, cy){
 	maze[cl].forEach(x => {
 		if(--start_cy < 0){
 			let new_x = x.splice(start_cx, 11);
-			//console.log(new_x.join(' '));
+            new_x = [" ",  ...new_x, " "];
 			visible_level.push(new_x)
 		}
 	});
