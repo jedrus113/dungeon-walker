@@ -35,7 +35,7 @@ function create () {
     this.level_sprites = [];
     this.sleep_input_till = 0;
     this.maze = new Maze(map1);
-    this.custom_player = new Player(this.maze, 0,23,1,'P');
+    this.custom_player = new Player(this.maze, 0,3,1,'P');
     this.map_render = map_render;
     this.key_up = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.W);
     this.key_down = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.S);
